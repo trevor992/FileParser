@@ -32,7 +32,7 @@ class FileParser:
             list of data extracted from the file. In the case of an audio file it is the RAW floating point values of
             each sample
         sr : int
-            defaults to native sampling rate. Only used when reading and extracting data from audio files
+            defaults to 44100. Only used when reading and extracting data from audio files
 
         Methods
         -------
@@ -49,7 +49,7 @@ class FileParser:
             provided in attribute filetype
         """
 
-    def __init__(self, dir, file_exten, sample_rate=None):
+    def __init__(self, dir, file_exten, sample_rate=44100):
 
         """
         Defines the location and type of the file that contains the data needs to be extracted
@@ -61,7 +61,8 @@ class FileParser:
             file_exten : str
                 file extension of the files that are to be read. All files with this extension will be read.
             sample_rate : int, optional
-                sample rate an audio file is to be sampled at. Defaults to the native sampling rate of the audio file
+                sample rate an audio file is to be sampled at. Defaults to 44100. It's assumed all audio files in the
+                directory are at the same sample rate.
 
         """
 
@@ -72,7 +73,6 @@ class FileParser:
         for file in os.listdir(self.directory):
             if file.endswith(self.file_extension):
                 temp, sr = librosa.core.load(os.path.join(self.directory, file), sr=sample_rate)
-                self.sr = sr
                 self.data.append(temp)
 
     def mfcc_extract(self, n_fft, window_len, hop_len, destination_dir, filename, filetype=".csv"):
