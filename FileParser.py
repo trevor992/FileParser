@@ -136,7 +136,7 @@ class FileParser:
                  """
 
         self.__checkpath(destination_dir)
-        for i, datum in enumerate(self.data):
+        for datum in self.data:
             data = processing_function(datum, **param_dict)
             if filetype == ".csv":
                 self.__write_csv(data, "centroid", destination_dir, filename + filetype)
