@@ -1,15 +1,9 @@
-import librosa.core.audio
-import os
-import csv
-
-
 class FileParser:
+    """ Description: A wrapper class for extracting data and writing the data to another file(s) for further processing
+     and manipulation. Currently can extract data from .wav files (audio files) and the Spotify API. Can only write the
+     data to .csv file(s).
 
-    """ Description: A class for extracting data from a directory containing multiple files of the same type
-        and writing the data to another file for further processing and manipulation. Currently can only extract data
-        from .wav files (audio files) and can only write the data to a .csv file(s).
-
-        Dependencies: librosa, os, csv
+        Dependencies: librosa, os, csv, spotipy,
 
         Compatible Audio File Types (by file extension): .wav
 
@@ -46,14 +40,14 @@ class FileParser:
             provided in attribute filetype
         """
 
-    def __init__(self, dir, file_exten, sample_rate=44100):
+    def __init__(self, path=None, file_exten=None, sample_rate=None):
 
         """
         Defines the location and type of the file that contains the data needs to be extracted
 
         Parameters
         ----------
-            dir : str
+            path : str
                 directory containing the files
             file_exten : str
                 file extension of the files that are to be read. All files with this extension will be read.
@@ -63,20 +57,27 @@ class FileParser:
 
         """
 
-        self.directory = dir
+        import librosa.core.audio
+        import os
+        import csv
+
+        self.librosa = librosa.core.audio
+        self.os = os
+        self.csv = csv
+        self.directory = path
         self.file_extension = file_exten
         self.data = []
         if sample_rate is None and file_exten == ".wav":
             sample_rate = self.__get_sample_rate()
 
         self.sr = sample_rate
-        for file in os.listdir(self.directory):
-            if file.endswith(self.file_extension):
-                temp, sr = librosa.core.load(os.path.join(self.directory, file))
-                self.data.append(temp)
+        if self.directory is not None and self.file_extension is not None:
+            for file in self.os.listdir(self.directory):
+                if file.endswith(self.file_extension):
+                    temp, sr = self.librosa.load(self.os.path.join(self.directory, file))
+                    self.data.append(temp)
 
-
-    def extract_one_to_one(self,destination_dir,processing_function,param_dict,filename ,filetype=".csv"):
+    def extract_one_to_one(self, destination_dir, processing_function, param_dict, filename , filetype=".csv"):
 
         """
         Creates one output file for each input file. In the case of audio files this is designed for situations where
@@ -110,7 +111,7 @@ class FileParser:
         for i, datum in enumerate(self.data):
             data = processing_function(datum, **param_dict)
             if filetype == ".csv":
-                self.__write_csv(data.T, "mfcc", destination_dir, filename + str(i) + filetype)
+                self.__write_csv(data.T, "multi", destination_dir, filename + str(i) + filetype)
 
     def extract_all_to_one(self, destination_dir, processing_function, param_dict,filename, filetype=".csv"):
 
@@ -142,11 +143,11 @@ class FileParser:
                 self.__write_csv(data, "centroid", destination_dir, filename + filetype)
 
     def __get_sample_rate(self):
-        file_list = os.listdir(self.directory)
+        file_list = self.os.listdir(self.directory)
         i = 0
         while True:
             if file_list[i].endswith(self.file_extension):
-                sr = librosa.core.get_samplerate(os.path.join(self.directory, file_list[i]))
+                sr = self.librosa.get_samplerate(self.os.path.join(self.directory, file_list[i]))
                 break
             elif not file_list[i].endswith(self.file_extension):
                 i += 1
@@ -154,27 +155,52 @@ class FileParser:
                 raise RuntimeError("Sample Rate was not specified and could not be determined")
         return sr
 
-
-    @staticmethod
-    def __write_csv(data, data_type, destination_dir, filename):
-        if data_type == "mfcc":
-            with open(os.path.join(destination_dir,filename), "w") as csv_file:
-                writer = csv.writer(csv_file, delimiter=",")
-                for coeff in range(0, len(data)):
-                    writer.writerow(data[coeff])
+    def __write_csv(self, data, data_type, destination_dir, filename, fieldnames=None):
+        if data_type == "multi":
+            with open(self.os.path.join(destination_dir,filename), "w") as csv_file:
+                writer = self.csv.writer(csv_file, delimiter=",")
+                for coeffs in data:
+                    writer.writerow(coeffs)
         else:
-            with open(os.path.join(destination_dir,filename), "a") as csv_file:
-                writer = csv.writer(csv_file, delimiter=",")
-                for sample in range(0, len(data)):
-                    writer.writerow(data[sample])
+            with open(self.os.path.join(destination_dir,filename), "a") as csv_file:
+                writer = self.csv.writer(csv_file, delimiter=",")
+                for frames in data:
+                    writer.writerow(frames)
 
-    @staticmethod
-    def __checkpath(path):
-        if os.path.exists(path):
+    def __checkpath(self, path):
+        if self.os.path.exists(path):
             return
         else:
-            os.mkdir(path)
+            self.os.mkdir(path)
             return
+
+
+class SpotifyParsing(FileParser):
+
+    def __init__(self, client_id, client_secret):
+        import spotipy as spot
+        from spotipy.oauth2 import SpotifyClientCredentials
+
+        FileParser.__init__(self)
+        self.SpotifyClientCredentials = SpotifyClientCredentials
+        self.spot = spot
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.client_credentials_manager = self.SpotifyClientCredentials(client_id=self.client_id,
+                                                                        client_secret=self.client_secret)
+        self.sp = self.spot.Spotify(client_credentials_manager=self.client_credentials_manager)
+
+    def __write_csv(self, data, data_type, destination_dir, filename, fieldnames=None):
+        if data_type == "dict":
+            if fieldnames is None:
+                fieldnames = list(data)
+            with open(self.os.path.join(destination_dir,filename), "w") as csv_file:
+                writer = self.csv.DictWriter(csv_file, fieldnames)
+                writer.writeheader()
+                for datum in data:
+                    writer.writerow(datum)
+        else:
+            raise RuntimeError("Spotify Api Returns Dictionaries you must pass dict as the data type")
 
 
 
