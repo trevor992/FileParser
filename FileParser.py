@@ -1,4 +1,4 @@
-import librosa
+import librosa.core.audio
 import os
 import csv
 
@@ -12,9 +12,6 @@ class FileParser:
         Dependencies: librosa, os, csv
 
         Compatible Audio File Types (by file extension): .wav
-
-        Features Extracted: MFCC, Spectral Centroid and Spectral Flatness. See librosa documentation for further details
-        on these audio features
 
         As I expand this class should restructure into parent and child classes. I.e. parent class being something like
         FileParser and the children of FileParser being things like...AudioFileParser and XML File Parser
@@ -69,38 +66,38 @@ class FileParser:
         self.directory = dir
         self.file_extension = file_exten
         self.data = []
+        if sample_rate is None and file_exten == ".wav":
+            sample_rate = self.__get_sample_rate()
+
         self.sr = sample_rate
         for file in os.listdir(self.directory):
             if file.endswith(self.file_extension):
-                temp, sr = librosa.core.load(os.path.join(self.directory, file), sr=sample_rate)
+                temp, sr = librosa.core.load(os.path.join(self.directory, file))
                 self.data.append(temp)
 
-    def mfcc_extract(self, n_fft, window_len, hop_len, destination_dir, filename, filetype=".csv"):
+
+    def extract_one_to_one(self,destination_dir,processing_function,param_dict,filename ,filetype=".csv"):
 
         """
-        Computes 20 MFCC coefficients for each window in the data. Only works on audio files. Note that because each
-        window has 20 coeffcients a new file of type filetype will be created for each audio file that is read.
-        Assuming you are creating a .csv file the columns will correspond to the MFC Coefficients and the rows
-        will correspond to the respective audio frame (window). Thus, the data for each audio file read will
-        be stored in a unique file of type filetype where the naming scheme of these files is
+        Creates one output file for each input file. In the case of audio files this is designed for situations where
+        you have more than one value for each window. MFCC for instance may have 20+ coeffcients for each frame in the
+        input file. Assuming you are creating a .csv file the rows will correspond to the  individual frames and the
+        respective values that correspond to a row will be stored in that rows columns. Thus, the data for each audio
+        file read will be stored in a unique file of type filetype where the naming scheme of these files is
         filename + filetype + i where i is an integer representing the order in which the files were read. Starting
         at 0 going to ... infinity? As of python 2.7 int is promoted to a long if this number becomes too big python
         evaluates to infinity and would result in undefined behavior
 
-        MFCC are computed using librosa.feature.mfcc
 
         Parameters
         ----------
-            n_fft : int
-                number of samples to include in the fft. The greater the number of samples the better your low
-                frequency resolution will be
-            window_len : int
-                number of sample in a window (frame)
-            hop_len : int
-                number of samples the window moves over for each computation
             destination_dir : str
                 name of the directory the created files will be placed into. If directory does not exist it will be
                 created
+            processing_function : function
+                function you wish to process the raw audio data with
+            param_dict : dict
+                dictionary of parameters that cor
             filename : str
                 name of the file(s). Recall that for MFCC data each audio file that is read will correspond to one
                 audio file written. Columns in the file correspong to MFC coeffcients and rows correspond to each
@@ -110,77 +107,53 @@ class FileParser:
          """
 
         self.__checkpath(destination_dir)
-        for i in range(0, len(self.data)):
-            mfcc_data = librosa.feature.mfcc(self.data[i], sr=self.sr, n_fft=n_fft, win_length=window_len,
-                                             hop_length=hop_len)
+        for i, datum in enumerate(self.data):
+            data = processing_function(datum, **param_dict)
             if filetype == ".csv":
-                self.__write_csv(mfcc_data.T, "mfcc", destination_dir, filename + str(i) + filetype)
+                self.__write_csv(data.T, "mfcc", destination_dir, filename + str(i) + filetype)
 
-    def centroid_extract(self, n_fft, window_len, hop_len, destination_dir, filename, filetype=".csv"):
+    def extract_all_to_one(self, destination_dir, processing_function, param_dict,filename, filetype=".csv"):
 
         """
-        Computes spectral centroid for each window of each audio file. Only works on audio files. One file is
-        is generated. Columns are the spectral centroid for that window and the rows are the different audio files.
-
-        Spectral Centroid is computed using librosa.feature.spectral_centroid
+        creates one output file that contains data from all the input files. In the case of audio files it is designed
+        for situations where there is one number to represent each window.
 
         Parameters
         ----------
-            n_fft : int
-                number of samples to include in the fft. The greater the number of samples the better your low
-                frequency resolution will be
-            window_len : int
-                number of sample in a window (frame)
-            hop_len : int
-                number of samples the window moves over for each computation
             destination_dir : str
                 name of the directory the created files will be placed into. If directory does not exist it will be
                 created
+            processing_function : function
+                function you wish to process the raw audio data with
+            param_dict : dict
+                dictionary of parameters that cor
             filename : str
-                name of the file.
+                name of the file(s). Recall that for MFCC data each audio file that is read will correspond to one
+                audio file written. Columns in the file correspong to MFC coeffcients and rows correspond to each
+                individual frame
             filetype : str, optional
                 determines the type of file to be written by it's extension. Default is ".csv"
                  """
 
         self.__checkpath(destination_dir)
-        for i in range(0, len(self.data)):
-            centroid_data = librosa.feature.spectral_centroid(self.data[i], sr=self.sr, n_fft=n_fft,
-                                                              win_length=window_len, hop_length=hop_len)
+        for i, datum in enumerate(self.data):
+            data = processing_function(datum, **param_dict)
             if filetype == ".csv":
-                self.__write_csv(centroid_data, "centroid", destination_dir, filename + filetype)
+                self.__write_csv(data, "centroid", destination_dir, filename + filetype)
 
-    def spectral_flt_extract(self,n_fft, window_len, hop_len, destination_dir, filename, filetype=".csv"):
+    def __get_sample_rate(self):
+        file_list = os.listdir(self.directory)
+        i = 0
+        while True:
+            if file_list[i].endswith(self.file_extension):
+                sr = librosa.core.get_samplerate(os.path.join(self.directory, file_list[i]))
+                break
+            elif not file_list[i].endswith(self.file_extension):
+                i += 1
+            elif i > len(file_list):
+                raise RuntimeError("Sample Rate was not specified and could not be determined")
+        return sr
 
-        """
-        Computes spectral flatness for each window of each audio file. Only works on audio files. One file is
-        is generated. Columns are the spectral flatness for that window and the rows are the different audio files.
-
-        Spectral Centroid is computed using librosa.feature.spectral_flatness
-
-        Parameters
-        ----------
-            n_fft : int
-                number of samples to include in the fft. The greater the number of samples the better your low
-                frequency resolution will be
-            window_len : int
-                number of sample in a window (frame)
-            hop_len : int
-                number of samples the window moves over for each computation
-            destination_dir : str
-                name of the directory the created files will be placed into. If directory does not exist it will be
-                created
-            filename : str
-                name of the file.
-            filetype : str, optional
-                determines the type of file to be written by it's extension. Default is ".csv"
-                 """
-
-        self.__checkpath(destination_dir)
-        for i in range(0, len(self.data)):
-            flt_data = librosa.feature.spectral_flatness(self.data[i], n_fft=n_fft, win_length=window_len,
-                                                         hop_length=hop_len)
-            if filetype == ".csv":
-                self.__write_csv(flt_data, "flt", destination_dir, filename + filetype)
 
     @staticmethod
     def __write_csv(data, data_type, destination_dir, filename):
