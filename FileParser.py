@@ -175,13 +175,16 @@ class FileParser:
             return
 
 
-class SpotifyParsing(FileParser):
+class SpotifyParsing():
 
     def __init__(self, client_id, client_secret):
         import spotipy as spot
         from spotipy.oauth2 import SpotifyClientCredentials
+        import os
+        import csv
 
-        FileParser.__init__(self)
+        self.os = os
+        self.csv = csv
         self.SpotifyClientCredentials = SpotifyClientCredentials
         self.spot = spot
         self.client_id = client_id
@@ -194,13 +197,21 @@ class SpotifyParsing(FileParser):
         if data_type == "dict":
             if fieldnames is None:
                 fieldnames = list(data)
+            with open(self.os.path.join(destination_dir,filename), "a") as csv_file:
+                writer = self.csv.DictWriter(csv_file, fieldnames)
+                writer.writeheader()
+                for datum in data:
+                    writer.writerow(datum)
+        elif data_type == "dict_multi":
+            if fieldnames is None:
+                fieldnames = list(data)
             with open(self.os.path.join(destination_dir,filename), "w") as csv_file:
                 writer = self.csv.DictWriter(csv_file, fieldnames)
                 writer.writeheader()
                 for datum in data:
                     writer.writerow(datum)
         else:
-            raise RuntimeError("Spotify Api Returns Dictionaries you must pass dict as the data type")
+            raise RuntimeError("Spotify Api Returns Dictionaries you must pass dict as the data type or dict_multi")
 
 
 
