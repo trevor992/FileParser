@@ -1,5 +1,5 @@
 class FileParser:
-    """ Description: A wrapper class for extracting data and writing the data to another file(s) for further processing
+    """ Description: A class for extracting data and writing the data to another file(s) for further processing
      and manipulation. Currently can extract data from .wav files (audio files) and the Spotify API. Can only write the
      data to .csv file(s).
 

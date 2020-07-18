@@ -1,4 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e70721b6-8a6f-4076-b1c7-5f5c161527a4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/FileParser.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FileParser.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FileParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/FileParser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/centroid_test3/samp.csv" beforeDir="false" afterPath="$PROJECT_DIR$/centroid_test3/samp.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mfcc_test/samps0.csv" beforeDir="false" afterPath="$PROJECT_DIR$/mfcc_test/samps0.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mfcc_test/samps1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/mfcc_test/samps1.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mfcc_test/samps2.csv" beforeDir="false" afterPath="$PROJECT_DIR$/mfcc_test/samps2.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mfcc_test/samps3.csv" beforeDir="false" afterPath="$PROJECT_DIR$/mfcc_test/samps3.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mfcc_test/samps4.csv" beforeDir="false" afterPath="$PROJECT_DIR$/mfcc_test/samps4.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mfcc_test/samps5.csv" beforeDir="false" afterPath="$PROJECT_DIR$/mfcc_test/samps5.csv" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1eNV1RhvYgySnRhsilsgVZDTmrG" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="FileParseTest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="FileParser" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/FileParseTest.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.FileParseTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e70721b6-8a6f-4076-b1c7-5f5c161527a4" name="Default Changelist" comment="" />
+      <created>1594696612487</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1594696612487</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="568" y="227" key="#Notifications" timestamp="1594696683284">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="568" y="227" key="#Notifications/0.0.1366.728@0.0.1366.728" timestamp="1594696683284" />
+    <state width="1308" height="163" key="GridCell.Tab.0.bottom" timestamp="1594740984535">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1308" height="163" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1594740984535" />
+    <state width="1308" height="163" key="GridCell.Tab.0.center" timestamp="1594740984534">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1308" height="163" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1594740984534" />
+    <state width="1308" height="163" key="GridCell.Tab.0.left" timestamp="1594740984534">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1308" height="163" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1594740984534" />
+    <state width="1308" height="163" key="GridCell.Tab.0.right" timestamp="1594740984535">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1308" height="163" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1594740984535" />
+    <state x="184" y="9" key="SettingsEditor" timestamp="1594740977209">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="184" y="9" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1594740977209" />
+  </component>
 </project>
