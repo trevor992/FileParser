@@ -111,7 +111,7 @@ class FileParser:
         for i, datum in enumerate(self.data):
             data = processing_function(datum, **param_dict)
             if filetype == ".csv":
-                self.__write_csv(data.T, "multi", destination_dir, filename + str(i) + filetype)
+                self.write_csv(data.T, "multi", destination_dir, filename + str(i) + filetype)
 
     def extract_all_to_one(self, destination_dir, processing_function, param_dict,filename, filetype=".csv"):
 
@@ -140,7 +140,7 @@ class FileParser:
         for datum in self.data:
             data = processing_function(datum, **param_dict)
             if filetype == ".csv":
-                self.__write_csv(data, "centroid", destination_dir, filename + filetype)
+                self.write_csv(data, "centroid", destination_dir, filename + filetype)
 
     def __get_sample_rate(self):
         file_list = self.os.listdir(self.directory)
@@ -155,12 +155,45 @@ class FileParser:
                 raise RuntimeError("Sample Rate was not specified and could not be determined")
         return sr
 
-    def __write_csv(self, data, data_type, destination_dir, filename, fieldnames=None):
+    def write_csv(self, data, data_type, destination_dir, filename, fieldnames=None):
+        """
+        writes data to .csv file. Either one or one csv file per file read
+
+        Parameters
+        ----------
+            data : list, dict
+                list or dictionary of the data to be writen. If dictionary data_type should be set to "dict" however the
+                method will also do this check for you.
+            data_type : str
+                keyword string to inform the function of the type of data and how it should deal with it
+            destination_dir : str
+                absolute or relative path to where you would like the files to be written if the director does not exist
+                it will be created for you
+            filename : str
+                name of the file(s). Recall that is data_type = "multi" data each  file that is read will correspond
+                to one .csv file written and will be numbered starting at 0
+            filetype : str, optional
+                determines the type of file to be written by it's extension. Default is ".csv"
+                 """
+        if type(data) is dict and data_type != "dict":
+            data_type = "dict"
+        if type(data) is not dict and fieldnames is not None:
+            raise RuntimeError("fieldnaames field only applies when using a dict data type for the input data")
         if data_type == "multi":
             with open(self.os.path.join(destination_dir,filename), "w") as csv_file:
                 writer = self.csv.writer(csv_file, delimiter=",")
                 for coeffs in data:
                     writer.writerow(coeffs)
+        elif data_type == "dict":
+            if fieldnames is None:
+                fieldnames = list(data)
+            with open(self.os.path.join(destination_dir,filename), "a") as csv_file:
+                writer = self.csv.DictWriter(csv_file, fieldnames)
+                writer.writeheader()
+                for datum in data:
+                    writer.writerow(datum)
+        elif data_type != "multi" or data_type != "dict":
+            raise RuntimeError("Supported data_types keywords are multi and dict")
         else:
             with open(self.os.path.join(destination_dir,filename), "a") as csv_file:
                 writer = self.csv.writer(csv_file, delimiter=",")
@@ -193,25 +226,7 @@ class SpotifyParsing():
                                                                         client_secret=self.client_secret)
         self.sp = self.spot.Spotify(client_credentials_manager=self.client_credentials_manager)
 
-    def __write_csv(self, data, data_type, destination_dir, filename, fieldnames=None):
-        if data_type == "dict":
-            if fieldnames is None:
-                fieldnames = list(data)
-            with open(self.os.path.join(destination_dir,filename), "a") as csv_file:
-                writer = self.csv.DictWriter(csv_file, fieldnames)
-                writer.writeheader()
-                for datum in data:
-                    writer.writerow(datum)
-        elif data_type == "dict_multi":
-            if fieldnames is None:
-                fieldnames = list(data)
-            with open(self.os.path.join(destination_dir,filename), "w") as csv_file:
-                writer = self.csv.DictWriter(csv_file, fieldnames)
-                writer.writeheader()
-                for datum in data:
-                    writer.writerow(datum)
-        else:
-            raise RuntimeError("Spotify Api Returns Dictionaries you must pass dict as the data type or dict_multi")
+
 
 
 
