@@ -172,8 +172,9 @@ class FileParser:
             filename : str
                 name of the file(s). Recall that is data_type = "multi" data each  file that is read will correspond
                 to one .csv file written and will be numbered starting at 0
-            filetype : str, optional
-                determines the type of file to be written by it's extension. Default is ".csv"
+            fieldnames : str, optional
+                field names for when dictionary is supplied as the data type. If they are not provided they will be
+                inferred from the dictionary itself.
                  """
         if type(data) is dict and data_type != "dict":
             data_type = "dict"
@@ -216,6 +217,7 @@ class SpotifyParsing():
         import os
         import csv
 
+        self.utilities = FileParser()
         self.os = os
         self.csv = csv
         self.SpotifyClientCredentials = SpotifyClientCredentials
@@ -226,13 +228,44 @@ class SpotifyParsing():
                                                                         client_secret=self.client_secret)
         self.sp = self.spot.Spotify(client_credentials_manager=self.client_credentials_manager)
 
+    def get_tracks_from_playlist(self, playlist_id, **kwargs):
+        results = self.sp.playlist_tracks(playlist_id, kwargs)
+        tracks = results['items']
+        while results['next']:
+            results = self.sp.next(results)
+            tracks.extend(results['items'])
+        return tracks
 
+    def write_csv(self, data, destination_dir, filename, fieldnames = None):
+        self.utilities.write_csv(data, destination_dir, filename, fieldnames=fieldnames)
 
+    def search_spotify(self, q, **kwargs):
+        return self.sp.search(q, kwargs)
 
+    @staticmethod
+    def collect_track_uri(track_dict_list):
+        track_id_list = []
+        for entry in track_dict_list:
+            track_id_list.append(entry["track"]["id"])
+        return track_id_list
 
-
-
-
+    # can get max 100 ids at one
+    def get_spotify_audio_features(self,track_uri_list, batch_size=50):
+        track_feat_list = []
+        x = 0
+        n = batch_size
+        i = 0
+        reps = int(len(track_uri_list) / batch_size)
+        while i < reps:
+            track_feat_list.append(self.sp.audio_features(track_uri_list[x:n]))
+            x = n
+            n += batch_size
+            i += 1
+        if (len(track_uri_list) % batch_size) != 0:
+            n -= batch_size
+            end = n + (len(track_uri_list) % batch_size)
+            track_feat_list.append(self.sp.audio_features(track_uri_list[n:end]))
+        return track_feat_list
 
 
 
