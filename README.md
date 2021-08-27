@@ -1,5 +1,5 @@
 # FileParser
-A Python Class for parsing files of various types. Made by me for me. The goal is readable re-usable code that extracts data from files to ease further processing. I Expand as needed.
+A Python Class for parsing files of various types. The goal is readable re-usable code that extracts data from files to ease further processing. I Expand as needed.
 
 Happy to recieve feedback, criticisms, comments, questions or suggestions.
 E-mail: trevor "dot" naumann92 "at" gmail "dot" com
